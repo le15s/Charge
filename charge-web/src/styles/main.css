@@ -1,0 +1,168 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+@plugin 'tailwind-bootstrap-grid';
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Auto-generated theme from "theme.json"*/
+@import "./generated-theme.css";
+
+@theme {
+  --color-card: #ffffff;
+  --color-darkmode-card: #14171b;
+  /* Weight-plate colours, used to tag muscle groups and states */
+  --color-plate-red: #d7262e;
+  --color-plate-blue: #2a62d6;
+  --color-plate-yellow: #e0a400;
+  --color-plate-green: #1e9a56;
+  --color-plate-steel: #7d8795;
+  --color-darkmode-plate-red: #ff5a5f;
+  --color-darkmode-plate-blue: #6b97f5;
+  --color-darkmode-plate-yellow: #f5c83b;
+  --color-darkmode-plate-green: #4cc584;
+  --color-darkmode-plate-steel: #9aa4b2;
+  --animate-pop: pop 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-flash: flash 0.9s ease-out;
+  --animate-rise: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-spin-slow: spin-slow 140s linear infinite;
+  --animate-spin-slow-rev: spin-slow 170s linear infinite reverse;
+  --font-marker: "Permanent Marker", cursive;
+  --font-atlas: "Instrument Serif", Georgia, serif;
+  --font-menu: "Bricolage Grotesque Variable", "Bricolage Grotesque", sans-serif;
+  --font-stencil: "Big Shoulders Stencil Display", sans-serif;
+  --font-typewriter: "Special Elite", "Courier New", monospace;
+  --font-grotesk: "Space Grotesk Variable", "Space Grotesk", sans-serif;
+  --font-brand: "Big Shoulders Display", sans-serif;
+}
+@keyframes pop { 0% { transform: scale(0.6); } 60% { transform: scale(1.08); } 100% { transform: scale(1); } }
+@keyframes flash { 0% { background-color: rgb(30 154 86 / 0.35); } 100% { background-color: rgb(30 154 86 / 0.12); } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+@import "./safe.css";
+@import "./utilities.css";
+@import "./sections.css";
+@import "./motion.css";
+
+@layer base {
+  @import "./base.css";
+}
+
+@layer components {
+  @import "./components.css";
+  @import "./navigation.css";
+  @import "./buttons.css";
+}
+
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+.animate-shake { animation: shake 0.4s ease-in-out; }
+
+/* ---------- Aesthetic + motion layer ---------- */
+
+/* A soft glow in the section's accent colour behind the top of every app page */
+.app-backdrop { isolation: isolate; }
+.app-backdrop::before {
+  content: ""; position: fixed; inset: 0 0 auto 0; height: 520px; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(900px 340px at 82% -90px, color-mix(in srgb, var(--sk-accent) 15%, transparent), transparent 70%),
+    radial-gradient(600px 260px at 8% -60px, rgb(42 98 214 / 0.05), transparent 70%);
+}
+.dark .app-backdrop::before {
+  background:
+    radial-gradient(900px 340px at 82% -90px, color-mix(in srgb, var(--sk-accent) 20%, transparent), transparent 70%),
+    radial-gradient(600px 260px at 8% -60px, rgb(107 151 245 / 0.06), transparent 70%);
+}
+
+/* Page content settles in one block at a time (only while the page is first arriving). The style of the motion comes from the section (see sections.css). */
+@keyframes settle { from { opacity: 0; transform: translateY(16px) scale(0.985); } to { opacity: 1; transform: none; } }
+.page-enter.is-entering > * > *:nth-child(1) { animation-delay: 0ms; }
+.page-enter.is-entering > * > *:nth-child(2) { animation-delay: 60ms; }
+.page-enter.is-entering > * > *:nth-child(3) { animation-delay: 120ms; }
+.page-enter.is-entering > * > *:nth-child(4) { animation-delay: 180ms; }
+.page-enter.is-entering > * > *:nth-child(5) { animation-delay: 230ms; }
+.page-enter.is-entering > * > *:nth-child(6) { animation-delay: 280ms; }
+.page-enter.is-entering > * > *:nth-child(7) { animation-delay: 330ms; }
+.page-enter.is-entering > * > *:nth-child(n+8) { animation-delay: 380ms; }
+
+/* Sheets, dialogs and their dim backdrop */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sheet-up { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes dialog-in { from { opacity: 0; transform: translateY(14px) scale(0.96); } to { opacity: 1; transform: none; } }
+.anim-backdrop { animation: fade-in 0.22s ease-out; }
+.anim-sheet { animation: sheet-up 0.38s cubic-bezier(0.2, 0.9, 0.25, 1); }
+.anim-dialog { animation: dialog-in 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.05); }
+@media (min-width: 640px) { .anim-sheet { animation: dialog-in 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.05); } }
+
+/* Progress bars fill from empty when they appear */
+@keyframes bar-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.anim-bar { transform-origin: left center; animation: bar-grow 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s backwards; }
+
+/* Switching light/dark cross-fades instead of snapping */
+.theme-fade, .theme-fade *, .theme-fade *::before, .theme-fade *::after {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, fill 0.4s ease, stroke 0.4s ease, box-shadow 0.4s ease !important;
+}
+
+/* Soft sweep for loading placeholders */
+@keyframes sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.skeleton { background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.55) 50%, transparent 70%) 0 0 / 200% 100% no-repeat, rgb(125 135 149 / 0.16); animation: sweep 1.4s linear infinite; }
+.dark .skeleton { background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.07) 50%, transparent 70%) 0 0 / 200% 100% no-repeat, rgb(255 255 255 / 0.07); }
+
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+
+/* Global polish */
+html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+::selection { background: rgb(215 38 46 / 0.2); }
+.dark ::selection { background: rgb(255 90 95 / 0.3); }
+* { scrollbar-width: thin; scrollbar-color: rgb(125 135 149 / 0.45) transparent; }
+:focus-visible { outline: 2px solid rgb(215 38 46 / 0.65); outline-offset: 2px; border-radius: 6px; }
+.dark :focus-visible { outline-color: rgb(255 90 95 / 0.8); }
+
+/* One plate colour per workout (see lib/plates.ts) */
+:root {
+  --pc-0: #d7262e;
+  --pc-1: #2a62d6;
+  --pc-2: #e0a400;
+  --pc-3: #1e9a56;
+  --pc-4: #f06a1d;
+  --pc-5: #7a3fd1;
+  --pc-6: #0fa3b1;
+  --pc-7: #e0408f;
+  --pc-8: #8fb81f;
+  --pc-9: #8a5a2b;
+  --pc-10: #3fa7f0;
+  --pc-11: #2fbf94;
+  --pc-12: #5b6b7e;
+  --pc-13: #ff7f6e;
+  --pc-14: #8a7cf0;
+  --pc-15: #8c1f45;
+  --pc-steel: #7d8795;
+}
+
+.dark {
+  --pc-0: #ff5a5f;
+  --pc-1: #6b97f5;
+  --pc-2: #f5c83b;
+  --pc-3: #4cc584;
+  --pc-4: #ff9150;
+  --pc-5: #a98bf2;
+  --pc-6: #43d3df;
+  --pc-7: #ff7ab8;
+  --pc-8: #b7e04a;
+  --pc-9: #c28a55;
+  --pc-10: #7cc8ff;
+  --pc-11: #6fe3bf;
+  --pc-12: #94a3b8;
+  --pc-13: #ffa190;
+  --pc-14: #b4a9ff;
+  --pc-15: #d9547f;
+  --pc-steel: #9aa4b2;
+}
+
+/* Secondary text stays readable in dark mode wherever a component forgot its dark: pair. */
+.dark .text-text-light { color: var(--color-darkmode-text-light); }
+
+/* Buttons sitting on the dark Workouts header keep a light outline so they stay readable in both themes. */
+.header-actions .btn-outline-primary { border-color: rgb(255 255 255 / 0.45); color: #fff; }
+@media (hover: hover) { .header-actions .btn-outline-primary:hover { background: #fff; color: #171b21; } }

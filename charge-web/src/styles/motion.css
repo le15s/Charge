@@ -1,0 +1,132 @@
+/* ===== Motion layer (v5) =====
+   One place for everything that moves between and inside pages. Unlayered so it wins over utilities.
+   All of it is switched off by the prefers-reduced-motion rule in main.css. */
+
+:root {
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --- Section curtain: when you switch tabs a band in the new section's colour wipes across --- */
+.section-curtain {
+  position: fixed; inset: 0; z-index: 70; pointer-events: none;
+  background:
+    linear-gradient(100deg, transparent 0 35%, color-mix(in srgb, var(--sk-accent) 55%, transparent) 50%, transparent 65% 100%),
+    color-mix(in srgb, var(--sk-accent) 14%, transparent);
+  clip-path: inset(0 100% 0 0);
+  animation: curtain 0.75s var(--ease-out) both;
+}
+@keyframes curtain {
+  0% { clip-path: inset(0 100% 0 0); opacity: 1; }
+  45% { clip-path: inset(0 0 0 0); opacity: 1; }
+  100% { clip-path: inset(0 0 0 100%); opacity: 0.0; }
+}
+
+/* --- Cards and rows that are links or buttons lift a little and press back --- */
+@media (hover: hover) {
+  a.card, button.card, .lift { transition: transform 0.35s var(--ease-spring), box-shadow 0.3s ease, border-color 0.2s ease; }
+  a.card:hover, button.card:hover, .lift:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -16px color-mix(in srgb, var(--sk-accent-strong) 45%, transparent); }
+}
+a.card:active, button.card:active, .lift:active { transform: translateY(0) scale(0.985); transition-duration: 0.08s; }
+
+/* --- Inputs glow in the section colour when focused --- */
+.form-input, .form-select, textarea.form-input {
+  transition: box-shadow 0.25s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+.form-input:focus, .form-select:focus {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sk-accent) 22%, transparent);
+}
+:focus-visible { transition: outline-offset 0.15s ease; }
+
+/* --- Text links draw their underline --- */
+.prose a, .link-draw {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1.5px no-repeat;
+  transition: background-size 0.35s var(--ease-out);
+  text-decoration: none;
+}
+@media (hover: hover) { .prose a:hover, .link-draw:hover { background-size: 100% 1.5px; } }
+
+/* --- Lists stagger in while a page arrives (first ten rows) --- */
+.page-enter.is-entering :is(ul, ol)[class] > li { animation: rise-quick 0.5s var(--ease-out) backwards; }
+.page-enter.is-entering :is(ul, ol)[class] > li:nth-child(1) { animation-delay: 180ms; }
+.page-enter.is-entering :is(ul, ol)[class] > li:nth-child(2) { animation-delay: 230ms; }
+.page-enter.is-entering :is(ul, ol)[class] > li:nth-child(3) { animation-delay: 280ms; }
+.page-enter.is-entering :is(ul, ol)[class] > li:nth-child(4) { animation-delay: 330ms; }
+.page-enter.is-entering :is(ul, ol)[class] > li:nth-child(5) { animation-delay: 380ms; }
+.page-enter.is-entering :is(ul, ol)[class] > li:nth-child(6) { animation-delay: 420ms; }
+.page-enter.is-entering :is(ul, ol)[class] > li:nth-child(7) { animation-delay: 460ms; }
+.page-enter.is-entering :is(ul, ol)[class] > li:nth-child(n+8) { animation-delay: 500ms; }
+
+/* --- Cards further down the page reveal as you scroll to them (browsers with scroll-driven animations) --- */
+@supports (animation-timeline: view()) {
+  @keyframes scroll-reveal { from { opacity: 0; translate: 0 28px; scale: 0.97; } to { opacity: 1; translate: 0 0; scale: 1; } }
+  .page-enter .card:not(.no-reveal), .reveal {
+    animation: scroll-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 38%;
+  }
+  /* never hide things inside sheets, tables of many rows, or the chat */
+  .chat-wall .card, .no-reveal .card { animation: none; }
+}
+/* People who ask for less motion get every card fully visible straight away */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter .card, .reveal { animation: none !important; }
+}
+
+/* --- Check marks, ticks and "done" states spring in --- */
+@keyframes tick-draw { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
+.tick-draw path, .tick-draw polyline { stroke-dasharray: 24; animation: tick-draw 0.35s var(--ease-out) 0.05s backwards; }
+@keyframes ring-burst { 0% { transform: scale(0.4); opacity: 0.7; } 100% { transform: scale(2.1); opacity: 0; } }
+.ring-burst::after { content: ""; position: absolute; inset: 0; border-radius: inherit; border: 2px solid currentColor; animation: ring-burst 0.6s var(--ease-out) both; pointer-events: none; }
+
+/* --- Gentle idle motion for decorative hero pieces --- */
+@keyframes bob { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-6px) rotate(var(--r, 0deg)); } }
+.bob { animation: bob 5s ease-in-out infinite; }
+@keyframes drift { 0% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(14px, -10px, 0); } 100% { transform: translate3d(0, 0, 0); } }
+.drift { animation: drift 14s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+.breathe { animation: breathe 4.5s ease-in-out infinite; }
+
+/* --- Shared bits --- */
+@keyframes slide-in-right { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+@keyframes slide-in-left { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+@keyframes shimmer-pass { from { transform: translateX(-120%) skewX(-18deg); } to { transform: translateX(260%) skewX(-18deg); } }
+.shine { position: relative; overflow: hidden; }
+.shine::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 40%; background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.35), transparent); animation: shimmer-pass 0.9s var(--ease-out) 0.3s both; pointer-events: none; }
+
+/* Smooth height/size changes for details/summary and similar */
+:root { interpolate-size: allow-keywords; }
+details::details-content { transition: block-size 0.3s var(--ease-out), content-visibility 0.3s allow-discrete; block-size: 0; overflow: clip; }
+details[open]::details-content { block-size: auto; }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--sk-accent-strong); }
+
+/* --- Pain and injuries tiles --- */
+.limit-legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin: 0; padding: 0; list-style: none; font-size: 0.8rem; color: var(--color-text-light); }
+.dark .limit-legend { color: var(--color-darkmode-text-light); }
+.limit-legend li::before, .limit-state i { content: ""; display: inline-block; width: 0.6rem; height: 0.6rem; border-radius: 999px; margin-right: 0.4rem; background: var(--lc, #2f9e5f); }
+.limit-legend li[data-c="careful"], .limit-tile[data-c="careful"] { --lc: #e0a100; }
+.limit-legend li[data-c="avoid"], .limit-tile[data-c="avoid"] { --lc: #d7262e; }
+.limit-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
+@media (min-width: 640px) { .limit-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.limit-tile {
+  --lc: #2f9e5f; position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; min-height: 4.25rem; padding: 0.8rem 0.9rem 0.8rem 1.1rem; text-align: left; cursor: pointer;
+  border: 2px solid var(--color-border); border-radius: 0.75rem; background: var(--color-body); color: var(--color-text-dark);
+  transition: transform 0.28s var(--ease-spring), border-color 0.25s var(--ease-out), background-color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+}
+.dark .limit-tile { border-color: var(--color-darkmode-border); background: var(--color-darkmode-light); color: var(--color-darkmode-text-dark); }
+.limit-tile::before { content: ""; position: absolute; left: 0; top: 0.6rem; bottom: 0.6rem; width: 4px; border-radius: 4px; background: var(--lc); transition: background-color 0.25s var(--ease-out); }
+.limit-tile:active { transform: scale(0.96); }
+.limit-tile[data-c="careful"] { border-color: #e0a100; background-color: rgb(224 161 0 / 0.1); }
+.limit-tile[data-c="avoid"] { border-color: #d7262e; background-color: rgb(215 38 46 / 0.1); }
+.limit-name { font-weight: 700; font-size: 0.95rem; line-height: 1.2; }
+.limit-state { display: inline-flex; align-items: center; font-size: 0.8rem; font-weight: 600; color: var(--color-text); }
+.dark .limit-state { color: var(--color-darkmode-text); }
+.limit-state i { transition: background-color 0.25s var(--ease-out), transform 0.28s var(--ease-spring); }
+.limit-tile:not([data-c="none"]) .limit-state i { transform: scale(1.25); }
+@media (hover: hover) { .limit-tile:hover { transform: translateY(-2px); box-shadow: 0 6px 16px -10px rgb(0 0 0 / 0.35); } }
+.limit-tile:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+
+/* Buttons and fields ease in and out, never jump */
+button, a, input, textarea, select { transition-timing-function: var(--ease-out); }
+.limit-grid > .limit-tile:last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media (min-width: 640px) { .limit-grid > .limit-tile:last-child:nth-child(odd) { grid-column: auto; } }
